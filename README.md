@@ -38,6 +38,7 @@ graph TD
 NATIVE.CustomerManagement.API/
 ├── .github/                      # Workflows de CI/CD (GitHub Actions)
 ├── .vscode/                      # Configurações, Tasks e Extensões recomendadas
+├── docs/                         # documentação complementar da api
 ├── src/
 │   ├── application/              # Camada de Aplicação (Regras de Negócio)
 │   │   └── use-cases/            # Casos de uso atômicos (SRP)
@@ -157,6 +158,12 @@ npm run dev
 
 O servidor estará acessível em: `http://localhost:3000`
 Endpoint de verificação de integridade: `http://localhost:3000/health`
+
+## 🗄️ Banco de Dados
+
+O projeto utiliza MySQL 8.0 rodando via Docker. Para instruções detalhadas de configuração, variáveis de ambiente, persistência e solução de problemas de conexão (DBeaver / VS Code), consulte o [Guia do Banco de Dados](docs/database.md).
+
+---
 
 ### Modo Produção (Compilado)
 
