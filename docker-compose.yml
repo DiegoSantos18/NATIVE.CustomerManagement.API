@@ -1,0 +1,24 @@
+name: native-customer
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: native-customer-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_NAME:-native_customer_db}
+      MYSQL_USER: ${DB_USER:-native_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-native_password}
+    ports:
+      - '${DB_PORT:-3306}:3306'
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db-data:
+    driver: local
