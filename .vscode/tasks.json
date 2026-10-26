@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Copiar .env.example para .env",
+      "type": "shell",
+      "command": "if (!(Test-Path .env)) { Copy-Item .env.example .env; Write-Host 'Arquivo .env criado com sucesso!' -ForegroundColor Green } else { Write-Host 'O arquivo .env já existe.' -ForegroundColor Yellow }",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Usar versão do Node (.nvmrc)",
+      "type": "shell",
+      "command": "nvm use",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
