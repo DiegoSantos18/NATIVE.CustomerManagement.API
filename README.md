@@ -4,6 +4,19 @@ API REST desenvolvida em Node.js com TypeScript e Express, estruturada sob os pr
 
 ---
 
+## 🛠️ Stack Tecnológica
+
+- **Core / Runtime:** Node.js v26.5.0 (gerenciado via `.nvmrc`)
+- **Linguagem:** TypeScript
+- **Framework Web:** Express.js
+- **ORM / Banco de Dados:** Prisma ORM + MySQL
+- **Comunicação Real-time:** Socket.io (WebSocket)
+- **Validação de Dados:** Zod
+- **Qualidade de Código & Linting:** ESLint + Prettier
+- **Arquitetura:** Clean Architecture + SOLID
+
+---
+
 ## 🏗️ Arquitetura do Projeto
 
 A API adota uma Clean Architecture desacoplada, separando responsabilidades em camadas bem definidas e isolando as regras de negócio de dependências de infraestrutura:
