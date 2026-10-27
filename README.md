@@ -23,11 +23,11 @@ A API adota uma Clean Architecture desacoplada, separando responsabilidades em c
 
 ```mermaid
 graph TD
-    Client[Cliente HTTP / UI] --> Presentation[Presentation Layer<br>Controllers, Routes, Middlewares, Validators]
-    Presentation --> Application[Application Layer<br>Use Cases / Regras de Negócio]
-    Application --> Domain[Domain Layer<br>Entities, DTOs e Interfaces de Repositório]
-    Infrastructure[Infrastructure Layer<br>Prisma ORM, MySQL, WebSocket] --> Domain
-    Application --> Infrastructure
+    Client[Cliente HTTP / UI<br>Porta 4200] --> Presentation[Presentation Layer<br>Controllers, Routes, Middlewares, Validators]
+    Presentation --> Application[Application Layer, DTOs e <br>Use Cases / Regras de Negócio]
+    Application --> Domain[Domain Layer<br>Entities e Interfaces de Repositório]
+    Infrastructure[Infrastructure Layer<br>Prisma ORM, MySQL, WebSocket] --> Application
+    Infrastructure --> Domain
 ```
 
 ---
