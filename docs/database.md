@@ -1,6 +1,6 @@
 # 🗄️ Guia de Configuração do Banco de Dados (MySQL)
 
-Este documento descreve como configurar, rodar e gerenciar o ambiente de banco de dados MySQL local para a API do projeto **Native Customer Management**, utilizando Docker Compose.
+Este documento descreve como configurar, rodar e gerenciar o ambiente de banco de dados MySQL local para a API do projeto **Native Customer Management**, utilizando Docker Compose e Prisma ORM.
 
 ---
 
@@ -121,23 +121,42 @@ Esse script deve estar montado pelo `docker-compose.yml` no diretório `/docker-
 
 A configuração de permissões globais simplifica o ambiente local, mas amplia os privilégios do usuário MySQL. Ela deve ser utilizada apenas no ambiente de desenvolvimento deste desafio, não em produção.
 
-## 🧱 Migrations do Prisma
+## 🧱 Migrations e Seeds do Prisma
 
-Após iniciar o banco e garantir as permissões necessárias, execute a migration inicial:
-
-```bash
-npx prisma migrate dev --name init-customer-model
-```
-
-Para mudanças futuras no modelo de dados, crie migrations com nomes que descrevam a alteração realizada. Por exemplo:
+Após iniciar o banco e garantir as permissões necessárias, valide o schema e gere o Prisma Client:
 
 ```bash
-npx prisma migrate dev --name add-customer-status
+npm run prisma:db:validate
+npm run prisma:db:generate
 ```
+
+A validação verifica a configuração e o schema do Prisma. A geração atualiza o Prisma Client com base nos modelos reconhecidos pelo projeto.
+
+Após essas etapas, execute a migration inicial:
+
+```bash
+npm run prisma:db:migrate
+```
+
+Para popular a base de dados utilizando o ficheiro estático `customers.json` através do nosso orquestrador modular de seeds, execute:
+
+```bash
+npm run prisma:db:seed
+```
+
+### Reset Completo do Banco (Migrations + Seed)
+
+Se precisar limpar o banco inteiramente, rodar as migrações do zero e executar o seed de clientes de forma automatizada, utilize:
+
+```bash
+npm run prisma:db:reset
+```
+
+**Atenção:** o reset apaga os dados existentes e recria a estrutura do banco. Utilize-o somente quando realmente precisar reinicializar o ambiente.
 
 O Prisma mantém o histórico das migrations na tabela `prisma_migrations`, dentro do banco principal `native_customer_db`.
 
-Não é necessário criar manualmente as tabelas da aplicação: elas são gerenciadas pelas migrations.
+---
 
 ## 🔎 Verificação das Permissões
 
@@ -149,7 +168,7 @@ docker compose exec mysql mysql -uroot -p -e "SHOW GRANTS FOR 'native_user'@'%';
 
 Digite a senha configurada em `DB_ROOT_PASSWORD` quando solicitado.
 
-Verifique se o resultado contém as permissões necessárias para o Prisma Migrate criar e remover o banco temporário.
+Verifique se o resultado contém as permissões necessárias para el Prisma Migrate criar e remover o banco temporário.
 
 ## 🔌 Conexão com o Banco de Dados
 

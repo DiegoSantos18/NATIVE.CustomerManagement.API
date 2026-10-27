@@ -23,50 +23,71 @@ A API adota uma Clean Architecture desacoplada, separando responsabilidades em c
 
 ```mermaid
 graph TD
-    Client[Cliente HTTP / UI] --> Presentation[Presentation Layer<br>Controllers, Routes, Middlewares, Validators]
-    Presentation --> Application[Application Layer<br>Use Cases / Regras de Negócio]
-    Application --> Domain[Domain Layer<br>Entities, DTOs e Interfaces de Repositório]
-    Infrastructure[Infrastructure Layer<br>Prisma ORM, MySQL, WebSocket] --> Domain
-    Application --> Infrastructure
+    Client[Cliente HTTP / UI<br>Porta 4200] --> Presentation[Presentation Layer<br>Controllers, Routes, Middlewares, Validators]
+    Presentation --> Application[Application Layer, DTOs e <br>Use Cases / Regras de Negócio]
+    Application --> Domain[Domain Layer<br>Entities e Interfaces de Repositório]
+    Infrastructure[Infrastructure Layer<br>Prisma ORM, MySQL, WebSocket] --> Application
+    Infrastructure --> Domain
 ```
 
 ---
 
-## 📂 Estrutura de Pastas
+## 🌳 Estrutura de Pastas
 
-```text
-NATIVE.CustomerManagement.API/
-├── .github/                      # Workflows de CI/CD (GitHub Actions)
-├── .vscode/                      # Configurações, Tasks e Extensões recomendadas
-├── docker/                       # Configurações e scripts Docker
-├── docs/                         # Documentação complementar da api
-├── src/
-│   ├── application/              # Camada de Aplicação (Regras de Negócio)
-│   │   └── use-cases/            # Casos de uso atômicos (SRP)
-│   ├── domain/                   # Camada de Domínio (Núcleo da Aplicação)
-│   │   ├── dtos/                 # Objetos de Transferência de Dados
-│   │   ├── entities/             # Entidades puras do negócio
-│   │   └── repositories/         # Contratos e Interfaces dos repositórios
-│   ├── infrastructure/           # Camada de Infraestrutura
-│   │   ├── database/             # Instância e conexões de banco de dados
-│   │   ├── repositories/         # Implementações concretas (Prisma ORM)
-│   │   └── websocket/            # Configuração e emissão de eventos Socket.io
-│   ├── presentation/             # Camada de Apresentação (Interface HTTP)
-│   │   ├── controllers/          # Controladores HTTP
-│   │   ├── middlewares/          # Middlewares globais (Tratamento de erros, Auth)
-│   │   ├── routes/               # Definição e agrupamento de rotas
-│   │   └── validators/           # Schemas de validação de entrada (Zod)
-│   └── server.ts                 # Ponto de entrada e inicialização da aplicação
-├── .env                          # Variáveis de ambiente locais (não versionado)
-├── .env.example                  # Modelo de variáveis de ambiente
-├── .eslintrc.json                # Regras de linting do ESLint
-├── .gitignore                    # Arquivos ignorados pelo Git
-├── .nvmrc                        # Versão padronizada do Node.js (26.5.0)
-├── .prettierrc                   # Regras de formatação de código do Prettier
-├── package.json                  # Dependências e scripts do projeto
-├── README.md                     # Documentação da API
-└── tsconfig.json                 # Configuração do compilador TypeScript
-```
+<details>
+<summary><b>📂 NATIVE.CustomerManagement.API/</b></summary>
+
+- 📁 **.github/** — Workflows de CI/CD (GitHub Actions)
+- 📁 **.vscode/** — Configurações e extensões recomendadas
+- 📁 **docker/** — Configurações e scripts Docker
+- 📁 **docs/** — Documentação complementar da API
+- 📁 **prisma/** — Camada de Persistência e Infraestrutura
+  - 📁 **data/**
+    - 📁 **customers/** — Fontes de dados estáticas (`customers.json`)
+  - 📁 **migrations/** — Histórico de migrações DDL do MySQL
+  - 📁 **models/**
+    - 📁 **customers/** — Modelos de entidade isolados (`customer.prisma`)
+  - 📁 **seed/** — Scripts modulares de população de dados
+    - 📁 **common/** — Classes base e contratos de seed (`base.seed.ts`)
+    - 📁 **customers/** — Script de seed de clientes (`customer.seed.ts`)
+    - 📄 `index.ts` — Orquestrador principal de seeds
+  - 📄 `schema.prisma` — Configuração do cliente e datasource
+  - 📄 `tsconfig.json` — Isolamento de compilação do TypeScript para a pasta Prisma
+- 📁 **src/** — Código-fonte principal (Clean Architecture)
+  - 📁 **application/**
+    - 📁 **common/dtos/** — DTOs base compartilhados
+    - 📁 **customers/dtos/** — DTOs específicos do domínio de clientes
+    - 📁 **use-cases/** — Casos de uso atômicos (SRP)
+  - 📁 **domain/**
+    - 📁 **common/** — Entidades e contratos base (Entities, Repositories)
+    - 📁 **customers/** — Contexto de domínio (Entities, Repositories)
+  - 📁 **infrastructure/**
+    - 📁 **database/** — Conexões de banco de dados
+    - 📁 **repositories/** — Implementações concretas (Prisma)
+    - 📁 **utils/** — Helpers e métodos facilitadores (`json-file-reader.ts`)
+    - 📁 **websocket/** — Configuração Socket.io
+  - 📁 **presentation/**
+    - 📁 **controllers/** — Controladores HTTP
+    - 📁 **middlewares/** — Middlewares globais (Auth, Erros)
+    - 📁 **routes/** — Definição de rotas
+    - 📁 **validators/** — Schemas de validação (Zod)
+  - 📄 `server.ts` — Ponto de entrada da aplicação
+- 📄 `.editorconfig` — Padronização de formatação do editor
+- 📄 `.env` — Variáveis de ambiente locais (não versionado)
+- 📄 `.env.example` — Modelo de variáveis de ambiente
+- 📄 `.gitattributes` — Atributos de normalização de arquivos do Git
+- 📄 `.gitignore` — Arquivos ignorados pelo controle de versão
+- 📄 `.nvmrc` — Versão padronizada do Node.js
+- 📄 `.prettierrc` — Regras de formatação de código do Prettier
+- 📄 `docker-compose.yml` — Orquestração de containers Docker (MySQL)
+- 📄 `eslint.config.mjs` — Configuração complementar do ESLint (ESM)
+- 📄 `package-lock.json` — Registro de versões exatas das dependências npm
+- 📄 `package.json` — Dependências e scripts do projeto
+- 📄 `prisma.config.ts` — Configurações do Prisma ORM
+- 📄 `README.md` — Documentação do repositório
+- 📄 `tsconfig.json` — Configuração do compilador TypeScript
+
+</details>
 
 ---
 
@@ -136,14 +157,20 @@ nvm use 26.5.0
 
 No arquivo `package.json`, estão configurados os seguintes scripts:
 
-| Comando            | Descrição                                                                 |
-| :----------------- | :------------------------------------------------------------------------ |
-| `npm run dev`      | Inicia o servidor de desenvolvimento com _live-reload_ via `tsx`.         |
-| `npm run build`    | Compila os arquivos TypeScript (`src/`) para JavaScript na pasta `dist/`. |
-| `npm run start`    | Executa a versão compilada da API presente em `dist/server.js`.           |
-| `npm run lint`     | Executa a verificação estática do código com ESLint.                      |
-| `npm run lint:fix` | Corrige automaticamente os erros identificados pelo ESLint.               |
-| `npm run format`   | Formata automaticamente os arquivos TypeScript utilizando o Prettier.     |
+| Comando                      | Descrição                                                                 |
+| :--------------------------- | :------------------------------------------------------------------------ |
+| `npm run dev`                | Inicia o servidor de desenvolvimento com _live-reload_ via `tsx`.         |
+| `npm run build`              | Compila os arquivos TypeScript (`src/`) para JavaScript na pasta `dist/`. |
+| `npm run start`              | Executa a versão compilada da API presente em `dist/server.js`.           |
+| `npm run prisma:db:validate` | Valida a configuração e o schema do Prisma.                               |
+| `npm run prisma:db:generate` | Gera o Prisma Client com base no schema configurado.                      |
+| `npm run prisma:db:seed`     | Executa o orquestrador de seeds para popular a base de dados.             |
+| `npm run prisma:db:migrate`  | Cria e aplica novas migrações no banco via Prisma.                        |
+| `npm run prisma:db:reset`    | Apaga o banco, reaplica as migrações do zero e executa o seed automático. |
+| `npm run prisma:db:studio`   | Abre a interface gráfica web do Prisma Studio no navegador.               |
+| `npm run lint`               | Executa a verificação estática do código com ESLint.                      |
+| `npm run lint:fix`           | Corrige automaticamente os erros identificados pelo ESLint.               |
+| `npm run format`             | Formata automaticamente os arquivos TypeScript utilizando o Prettier.     |
 
 ---
 
@@ -160,13 +187,17 @@ npm run dev
 O servidor estará acessível em: `http://localhost:3000`
 Endpoint de verificação de integridade: `http://localhost:3000/health`
 
-### 🗄️Banco de Dados
+### 🗄️ Banco de Dados e Seed
 
 O projeto utiliza MySQL 8, executado localmente via Docker Compose.
 
-Consulte o [Guia do Banco de Dados](docs/database.md) para instruções sobre configuração do ambiente, inicialização do container, permissões do Prisma Migrate e execução das migrations.
+Consulte o [Guia do Banco de Dados](docs/database.md) para instruções sobre configuração do ambiente, inicialização do container, permissões do Prisma Migrate e execução das migrations e seeds.
 
-Após configurar o banco e preparar o ambiente, execute as migrations para criar a estrutura das tabelas.
+Para recriar o ambiente de banco de dados do zero e popular com os dados iniciais do `customers.json`:
+
+```bash
+npm run prisma:db:reset
+```
 
 ---
 
