@@ -7,10 +7,21 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "prisma:db:validate": "prisma validate",
+    "prisma:db:generate": "prisma generate",
+    "prisma:db:seed": "prisma generate && tsx prisma/seed/index.ts",
+    "prisma:db:migrate": "prisma migrate dev",
+    "prisma:db:reset": "prisma migrate reset",
+    "prisma:db:studio": "prisma studio",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "prisma": {
+    "seed": "npm run prisma:db:seed",
+    "validate": "npx prisma validate",
+    "generate": "npx prisma generate"
   },
   "repository": {
     "type": "git",
@@ -25,6 +36,7 @@
   },
   "homepage": "https://github.com/DiegoSantos18/NATIVE.CustomerManagement.API#readme",
   "dependencies": {
+    "@prisma/adapter-mariadb": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "cors": "^2.8.6",
     "dotenv": "^18.0.9",
@@ -33,6 +45,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.5",
@@ -44,6 +57,7 @@
     "prettier": "^3.9.10",
     "prisma": "^7.10.1",
     "tsx": "^4.23.15",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.1"
   }
 }
