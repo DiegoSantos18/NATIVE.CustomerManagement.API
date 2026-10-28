@@ -1,11 +1,11 @@
-import type { IEntity } from '../../common/entities/index.js';
+import type { IAudited, IEntity } from '../../common/entities/index.js';
 
-export interface Customer extends IEntity {
-  firstName?: string;
-  lastName?: string;
+export interface Customer extends IEntity<number>, IAudited {
+  firstName: string;
+  lastName: string | null;
   email: string;
-  gender?: string;
-  company?: string;
-  city?: string;
-  title?: string;
+  gender: string | null;
+  company: string | null;
+  city: string | null;
+  title: string | null;
 }
