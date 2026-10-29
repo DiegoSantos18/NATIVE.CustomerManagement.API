@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { BaseSeed } from '../common/index.js';
 import { JsonFileReader } from '../../../src/infrastructure/utils/index.js';
-import type { CustomerDTO } from '../../../src/application/customers/dtos/index.js';
+import { BaseSeed } from '../common/index.js';
+import type { CustomerSeedDTO } from './customer-dto.seed.js';
 
 export class CustomerSeed extends BaseSeed {
   constructor(prisma: PrismaClient) {
@@ -11,18 +11,21 @@ export class CustomerSeed extends BaseSeed {
   async execute(deleteMany?: boolean): Promise<void> {
     if (deleteMany) {
       await this.prisma.customer.deleteMany();
-      console.log('🧹 Consumidores limpos com sucesso.');
+      await this.prisma.$executeRaw`ALTER TABLE customers AUTO_INCREMENT = 1`;
+      console.log('🧹 Clientes limpos com sucesso.');
     }
 
-    console.log('🌱 A iniciar o processo de Seed de Consumidores...');
-    const customers = JsonFileReader.read<CustomerDTO[]>('prisma/data/customers/customers.json');
+    console.log('🌱 A iniciar o processo de Seed de Clientes...');
+    const customers = JsonFileReader.read<CustomerSeedDTO[]>(
+      'prisma/data/customers/customers.json',
+    );
     let totalCount = 0;
 
     for (const item of customers) {
       await this.prisma.customer.create({
         data: {
-          firstName: item.firstName ?? item.first_name ?? 'Unknown',
-          lastName: item.lastName ?? item.last_name ?? null,
+          firstName: item.first_name ?? 'Unknown',
+          lastName: item.last_name ?? null,
           email: item.email,
           gender: item.gender ?? null,
           company: item.company ?? null,

@@ -1,1 +1,2 @@
-export * from './customer.seed.js';
+export type { CustomerSeedDTO } from './customer-dto.seed.js';
+export { CustomerSeed } from './customer.seed.js';

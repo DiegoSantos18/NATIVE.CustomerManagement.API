@@ -1,6 +1,13 @@
-export interface IRepository<T> {
-  findById(id: string | number): Promise<T | null>;
-  findAll(): Promise<T[]>;
+import type { PaginatedResult, QueryParams } from '../queries/index.js';
+
+export interface IRepository<
+  T,
+  TId extends string | number = number,
+  TFilter = unknown,
+  TSortField extends string = string,
+> {
+  findById(id: TId): Promise<T | null>;
+  findAll(params: QueryParams<TFilter, TSortField>): Promise<PaginatedResult<T>>;
   save(entity: T): Promise<T>;
-  delete(id: string | number): Promise<boolean>;
+  delete(id: TId): Promise<boolean>;
 }

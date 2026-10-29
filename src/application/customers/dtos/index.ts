@@ -1,1 +1,1 @@
-export * from './customer.dto.js';
+export type { CustomerDTO } from './customer.dto.js';

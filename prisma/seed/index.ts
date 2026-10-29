@@ -1,14 +1,24 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
+dotenvExpand.expand(dotenv.config());
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { PrismaClient } from '@prisma/client';
 import { CustomerSeed } from './customers/index.js';
 
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL environment variable is not defined.');
+}
+
+const connection = new URL(databaseUrl);
+
 const adapter = new PrismaMariaDb({
-  host: process.env.DB_HOST!,
-  port: Number(process.env.DB_PORT ?? 3306),
-  user: process.env.DB_USER!,
-  password: process.env.DB_PASSWORD!,
-  database: process.env.DB_NAME!,
+  host: connection.hostname,
+  port: Number(connection.port || 3306),
+  user: decodeURIComponent(connection.username),
+  password: decodeURIComponent(connection.password),
+  database: connection.pathname.slice(1),
   connectionLimit: 5,
 });
 
@@ -24,7 +34,7 @@ async function main() {
 main()
   .catch((e) => {
     console.error('❌ Erro crítico durante a execução do seed:', e);
-    process.exit(1);
+    process.exitCode = 1;
   })
   .finally(async () => {
     await prisma.$disconnect();

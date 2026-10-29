@@ -1,1 +1,1 @@
-export * from './customer.repository.js';
+export type { ICustomerRepository } from './customer.repository.js';
