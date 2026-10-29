@@ -10,16 +10,19 @@ API REST desenvolvida em Node.js com TypeScript e Express, estruturada sob os pr
 - **Linguagem:** TypeScript
 - **Framework Web:** Express.js
 - **ORM / Banco de Dados:** Prisma ORM + MySQL
-- **Comunicação Real-time:** Socket.io (WebSocket) — integração planejada
-- **Validação de Dados:** Zod — integração planejada
+- **Comunicação Real-time:** Socket.io (WebSocket)
+- **Validação de Dados:** Zod
 - **Qualidade de Código & Linting:** ESLint + Prettier
 - **Arquitetura:** Clean Architecture + SOLID
+- **Injeção de Dependências:** Inversify
 
 ---
 
 ## 🏗️ Arquitetura do Projeto
 
-A API adota uma Clean Architecture desacoplada, separando responsabilidades em camadas bem definidas e isolando as regras de negócio de dependências de infraestrutura:
+A API adota uma Clean Architecture desacoplada, separando
+responsabilidades em camadas bem definidas e isolando as regras de
+negócio de dependências de infraestrutura:
 
 ```mermaid
 graph TD
@@ -27,7 +30,8 @@ graph TD
     Presentation --> Application["Application Layer<br/>DTOs e Use Cases"]
     Application --> Domain["Domain Layer<br/>Entities e Interfaces de Repositório"]
     Infrastructure["Infrastructure Layer<br/>Prisma ORM, MySQL e adaptadores externos"] -. "implementa os contratos definidos no Domain" .-> Domain
-    Composition["Composição manual de dependências"] --> Presentation
+    Composition["Composition Root<br/>Inversify DI Container"] --> Presentation
+    Composition --> Application
     Composition --> Infrastructure
 ```
 
@@ -36,7 +40,8 @@ graph TD
 ## 🌳 Estrutura de Pastas
 
 <details>
-<summary><b>📂 NATIVE.CustomerManagement.API/</b></summary>
+<summary><b>📂 NATIVE.CustomerManagement.API/</b>
+</summary>
 
 - 📁 **`.github/`** — Workflows de CI/CD (GitHub Actions)
 - 📁 **`.vscode/`** — Configurações e extensões recomendadas
@@ -64,6 +69,10 @@ graph TD
     - 📁 **`customers/`** — Contexto de domínio (Entities, Repositories)
   - 📁 **`infrastructure/`**
     - 📁 **`database/`** — Conexões de banco de dados
+    - 📁 **`di/`** — Container e configuração da injeção de dependências (Inversify)
+      - 📄 `container.ts` — Inicialização do container
+      - 📁 **`modules/`** — Registro das dependências por módulo
+        - 📄 `customers.module.ts` — Registro das dependências relacionadas a clientes
     - 📁 **`repositories/`** — Implementações concretas (Prisma)
     - 📁 **`utils/`** — Helpers e métodos facilitadores (`json-file-reader.ts`)
     - 📁 **`websocket/`** — Configuração Socket.io
@@ -102,7 +111,7 @@ Para manter a consistência do ambiente entre todos os desenvolvedores e no pipe
 
 ### Como instalar o NVM
 
-[https://www.nvmnode.com/pt/guide/download.html](https://www.nvmnode.com/pt/guide/download.html)
+[NVM Download](https://www.nvmnode.com/pt/guide/download.html)
 
 ### Como alternar para a versão correta do Node via NVM
 
@@ -153,7 +162,8 @@ nvm use 26.5.0
    cp .env.example .env
    ```
 
-   _(No VS Code, você pode pressionar `Ctrl + Shift + P` → `Tasks: Run Task` → `Copiar .env.example para .env`)._
+   _(No VS Code, você pode pressionar `Ctrl + Shift + P` →
+   `Tasks: Run Task` → `Copiar .env.example para .env`)._
 
 ---
 
@@ -161,20 +171,51 @@ nvm use 26.5.0
 
 No arquivo `package.json`, estão configurados os seguintes scripts:
 
-| Comando                      | Descrição                                                                 |
-| :--------------------------- | :------------------------------------------------------------------------ |
-| `npm run dev`                | Inicia o servidor de desenvolvimento com _live-reload_ via `tsx`.         |
-| `npm run build`              | Compila os arquivos TypeScript (`src/`) para JavaScript na pasta `dist/`. |
-| `npm run start`              | Executa a versão compilada da API presente em `dist/server.js`.           |
-| `npm run prisma:db:validate` | Valida a configuração e o schema do Prisma.                               |
-| `npm run prisma:db:generate` | Gera o Prisma Client com base no schema configurado.                      |
-| `npm run prisma:db:seed`     | Executa o orquestrador de seeds para popular a base de dados.             |
-| `npm run prisma:db:migrate`  | Cria e aplica novas migrações no banco via Prisma.                        |
-| `npm run prisma:db:reset`    | Apaga o banco, reaplica as migrações do zero e executa o seed automático. |
-| `npm run prisma:db:studio`   | Abre a interface gráfica web do Prisma Studio no navegador.               |
-| `npm run lint`               | Executa a verificação estática do código com ESLint.                      |
-| `npm run lint:fix`           | Corrige automaticamente os erros identificados pelo ESLint.               |
-| `npm run format`             | Formata automaticamente os arquivos TypeScript utilizando o Prettier.     |
+---
+
+Comando Descrição
+
+---
+
+`npm run dev` Inicia o servidor de
+desenvolvimento com _live-reload_
+via `tsx`.
+
+`npm run build` Compila os arquivos TypeScript
+(`src/`) para JavaScript na pasta
+`dist/`.
+
+`npm run start` Executa a versão compilada da API
+presente em `dist/server.js`.
+
+`npm run prisma:db:validate` Valida a configuração e o schema do
+Prisma.
+
+`npm run prisma:db:generate` Gera o Prisma Client com base no
+schema configurado.
+
+`npm run prisma:db:seed` Executa o orquestrador de seeds
+para popular a base de dados.
+
+`npm run prisma:db:migrate` Cria e aplica novas migrações no
+banco via Prisma.
+
+`npm run prisma:db:reset` Apaga o banco, reaplica as
+migrações do zero e executa o seed
+automático.
+
+`npm run prisma:db:studio` Abre a interface gráfica web do
+Prisma Studio no navegador.
+
+`npm run lint` Executa a verificação estática do
+código com ESLint.
+
+`npm run lint:fix` Corrige automaticamente os erros
+identificados pelo ESLint.
+
+`npm run format` Formata automaticamente os arquivos
+TypeScript utilizando o Prettier.
+-----------------------------------------------------------------------
 
 ---
 
@@ -182,7 +223,8 @@ No arquivo `package.json`, estão configurados os seguintes scripts:
 
 ### Modo Desenvolvimento
 
-Para subir a API localmente com recarregamento automático a cada alteração:
+Para subir a API localmente com recarregamento automático a cada
+alteração:
 
 ```bash
 npm run dev
@@ -192,13 +234,41 @@ O servidor estará acessível em: `http://localhost:3000`
 
 Endpoint de verificação de integridade: `http://localhost:3000/health`
 
+### Endpoints disponíveis
+
+---
+
+Método Endpoint Descrição
+
+---
+
+`GET` `/health` Verifica a
+disponibilidade da API.
+
+`GET` `/customers/total-by-city` Retorna a quantidade de
+clientes agrupada por
+cidade.
+----------------------------------------------------------------------------
+
+**Exemplo de requisição:**
+
+```http
+GET http://localhost:3000/customers/total-by-city
+```
+
+A rota não exige parâmetros nem corpo na requisição. Em caso de sucesso,
+retorna HTTP `200` com os dados agrupados por cidade.
+
 ### 🗄️ Banco de Dados e Seed
 
 O projeto utiliza MySQL 8, executado localmente via Docker Compose.
 
-Consulte o [Guia do Banco de Dados](docs/database.md) para instruções sobre configuração do ambiente, inicialização do container, permissões do Prisma Migrate e execução das migrations e seeds.
+Consulte o [Guia do Banco de Dados](docs/database.md) para instruções
+sobre configuração do ambiente, inicialização do container, permissões
+do Prisma Migrate e execução das migrations e seeds.
 
-Para recriar o ambiente de banco de dados do zero e popular com os dados iniciais do `customers.json`:
+Para recriar o ambiente de banco de dados do zero e popular com os dados
+iniciais do `customers.json`:
 
 ```bash
 npm run prisma:db:reset
