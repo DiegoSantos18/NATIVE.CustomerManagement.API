@@ -1,1 +1,1 @@
-export * from './base.repository.js';
+export type { IRepository } from './base.repository.js';

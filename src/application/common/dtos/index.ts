@@ -1,1 +1,1 @@
-export * from './base.dto.js';
+export type { IBaseDTO } from './base.dto.js';

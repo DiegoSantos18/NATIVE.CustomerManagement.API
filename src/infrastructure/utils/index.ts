@@ -1,1 +1,1 @@
-export * from './json-file-reader.js';
+export { JsonFileReader } from './json-file-reader.js';
