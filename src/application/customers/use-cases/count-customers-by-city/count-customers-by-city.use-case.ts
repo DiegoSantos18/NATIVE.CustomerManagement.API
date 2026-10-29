@@ -1,5 +1,5 @@
-import type { CityCustomerCount } from '../../../domain/customers/queries/index.js';
-import type { ICustomerRepository } from '../../../domain/customers/repositories/index.js';
+import type { CityCustomerCount } from '../../../../domain/customers/queries/index.js';
+import type { ICustomerRepository } from '../../../../domain/customers/repositories/index.js';
 
 export class CountCustomersByCityUseCase {
   constructor(private readonly customerRepository: ICustomerRepository) {}
