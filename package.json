@@ -16,6 +16,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.ts\"",
+    "check:circular": "npx --yes madge@8.0.0 --circular --extensions ts --ts-config tsconfig.json src",
     "test": "vitest run"
   },
   "prisma": {
