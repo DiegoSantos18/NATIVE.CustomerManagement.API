@@ -1,6 +1,6 @@
-import type { IBaseDTO } from '../../common/dtos/index.js';
+import type { IAuditedDTO, IBaseDTO } from '../../common/dtos/index.js';
 
-export interface CustomerDTO extends IBaseDTO {
+export interface CustomerDTO extends IBaseDTO<number>, IAuditedDTO {
   firstName?: string;
   lastName?: string;
   email: string;

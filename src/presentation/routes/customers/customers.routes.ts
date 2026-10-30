@@ -5,6 +5,7 @@ export function createCustomersRoutes(customersController: CustomersController):
   const router = Router();
 
   router.get('/total-by-city', customersController.getTotalByCity);
+  router.get('/:id', customersController.getById);
   router.get('/', customersController.getAll);
 
   return router;
