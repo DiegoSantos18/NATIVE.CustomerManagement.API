@@ -2,6 +2,7 @@ import type { Container } from 'inversify';
 
 import {
   CountCustomersByCityUseCase,
+  GetCustomerByIdUseCase,
   ListCustomersUseCase,
 } from '../../../application/customers/use-cases/index.js';
 import { CustomersController } from '../../../presentation/controllers/customers/index.js';
@@ -20,6 +21,9 @@ export function registerCustomersModule(container: Container): void {
   container
     .bind(ListCustomersUseCase)
     .toDynamicValue((context) => new ListCustomersUseCase(context.get(PrismaCustomerRepository)));
+  container
+    .bind(GetCustomerByIdUseCase)
+    .toDynamicValue((context) => new GetCustomerByIdUseCase(context.get(PrismaCustomerRepository)));
 
   // Controllers
   container
@@ -29,6 +33,7 @@ export function registerCustomersModule(container: Container): void {
         new CustomersController(
           context.get(CountCustomersByCityUseCase),
           context.get(ListCustomersUseCase),
+          context.get(GetCustomerByIdUseCase),
         ),
     );
 }
