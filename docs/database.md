@@ -16,6 +16,15 @@ Este documento descreve como configurar, executar e gerenciar o ambiente MySQL l
 
 - Um cliente de banco de dados. Recomenda-se o **[DBeaver](https://dbeaver.io/download/)** ou a extensão **[Database Client](https://database-client.com/)** no VS Code (consulte as [Sugestões de Extensões](../.vscode/extensions.json)), mas você pode utilizar outra ferramenta de sua preferência.
 
+**Prisma Studio**
+
+![Prisma Studio](./assets/prisma_studio.png)
+Abre o Prisma Studio no navegador ([localhost:51212](http://localhost:51212/))
+
+```bash
+npm run prisma:db:studio
+```
+
 **DBeaver**
 
 ![DBeaver - principal](./assets/dbeaver_principal.png)
