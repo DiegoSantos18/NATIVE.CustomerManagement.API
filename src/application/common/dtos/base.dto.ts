@@ -1,3 +1,3 @@
-export interface IBaseDTO {
-  id?: number;
+export interface IBaseDTO<TId extends string | number = number> {
+  id?: TId;
 }
