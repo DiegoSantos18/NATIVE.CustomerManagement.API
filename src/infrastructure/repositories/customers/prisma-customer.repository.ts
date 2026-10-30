@@ -1,12 +1,16 @@
 import { prismaClient } from '../../database/prisma-client.js';
+import type { PaginatedResult, QueryParams } from '../../../domain/common/queries/index.js';
 import type { ICustomerRepository } from '../../../domain/customers/repositories/index.js';
 import type { Customer } from '../../../domain/customers/entities/index.js';
-import type { PaginatedResult, QueryParams } from '../../../domain/common/queries/index.js';
-
+import type {
+  CustomerCreateData,
+  CustomerUpdateData,
+} from '../../../domain/customers/types/index.js';
 import type {
   CityCustomerCount,
   CustomerFilters,
 } from '../../../domain/customers/queries/index.js';
+import { Prisma } from '@prisma/client';
 
 export class PrismaCustomerRepository implements ICustomerRepository {
   private readonly prisma = prismaClient;
@@ -46,25 +50,23 @@ export class PrismaCustomerRepository implements ICustomerRepository {
     };
   }
 
-  async save(entity: Customer): Promise<Customer> {
-    const data = {
-      firstName: entity.firstName,
-      lastName: entity.lastName,
-      email: entity.email,
-      gender: entity.gender,
-      company: entity.company,
-      city: entity.city,
-      title: entity.title,
-    };
+  async add(data: CustomerCreateData): Promise<Customer> {
+    return this.prisma.customer.create({ data });
+  }
 
-    if (entity.id === undefined) {
-      return this.prisma.customer.create({ data });
+  async update(id: number, data: CustomerUpdateData): Promise<Customer | null> {
+    try {
+      return await this.prisma.customer.update({
+        where: { id },
+        data,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        return null;
+      }
+
+      throw error;
     }
-
-    return this.prisma.customer.update({
-      where: { id: entity.id },
-      data,
-    });
   }
 
   async delete(id: number): Promise<boolean> {

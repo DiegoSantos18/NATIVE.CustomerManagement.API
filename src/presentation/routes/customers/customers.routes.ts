@@ -6,6 +6,7 @@ export function createCustomersRoutes(customersController: CustomersController):
 
   router.get('/total-by-city', customersController.getTotalByCity);
   router.get('/:id', customersController.getById);
+  router.put('/:id', customersController.update);
   router.get('/', customersController.getAll);
 
   return router;
