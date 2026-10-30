@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-export class JsonFileReader {
+export class JsonFileReaderHelper {
   static read<T>(relativePathFromRoot: string): T {
     const filePath = path.resolve(process.cwd(), relativePathFromRoot);
 

@@ -4,10 +4,12 @@ import {
   CountCustomersByCityUseCase,
   GetCustomerByIdUseCase,
   ListCustomersUseCase,
+  UpdateCustomerUseCase,
 } from '../../../application/customers/use-cases/index.js';
 import {
   validateListCustomersQuery,
   validateGetCustomerById,
+  validateUpdateCustomer,
 } from '../../validators/customers/index.js';
 
 export class CustomersController extends BaseController {
@@ -15,6 +17,7 @@ export class CustomersController extends BaseController {
     private readonly countCustomersByCityUseCase: CountCustomersByCityUseCase,
     private readonly listCustomersUseCase: ListCustomersUseCase,
     private readonly getCustomerByIdUseCase: GetCustomerByIdUseCase,
+    private readonly updateCustomerUseCase: UpdateCustomerUseCase,
   ) {
     super();
   }
@@ -56,6 +59,38 @@ export class CustomersController extends BaseController {
       }
 
       const result = await this.getCustomerByIdUseCase.execute(validation.data);
+
+      if (!result) {
+        this.notFound(res, 'Cliente não encontrado.');
+        return;
+      }
+
+      this.ok(res, result);
+    } catch (error: unknown) {
+      next(error);
+    }
+  };
+
+  update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const idValidation = validateGetCustomerById(req.params);
+
+      if (!idValidation.success) {
+        this.badRequest(res, idValidation.message);
+        return;
+      }
+
+      const bodyValidation = validateUpdateCustomer(req.body);
+
+      if (!bodyValidation.success) {
+        this.badRequest(res, bodyValidation.message);
+        return;
+      }
+
+      const result = await this.updateCustomerUseCase.execute(
+        idValidation.data,
+        bodyValidation.data,
+      );
 
       if (!result) {
         this.notFound(res, 'Cliente não encontrado.');

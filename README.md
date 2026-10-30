@@ -129,6 +129,7 @@ nvm use 26.5.0
 | `npm run format`             | Formata os arquivos com Prettier.                                              |
 | `npm test`                   | Executa os testes automatizados com Vitest.                                    |
 | `npm run check:circular`     | Verifica dependências circulares no código-fonte com Madge.                    |
+| `npm run check:all`          | Verificar se tudo acima esta OK!                                               |
 
 ---
 

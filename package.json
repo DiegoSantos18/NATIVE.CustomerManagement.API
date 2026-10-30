@@ -15,8 +15,10 @@
     "prisma:db:studio": "prisma studio",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "format:check": "prettier --check \"src/**/*.ts\"",
     "format": "prettier --write \"src/**/*.ts\"",
     "check:circular": "npx --yes madge@8.0.0 --circular --extensions ts --ts-config tsconfig.json src",
+    "check:all": "npm run prisma:db:validate && npm run prisma:db:generate && npm run format:check && npm run lint && npm run check:circular && npm run test && npm run build",
     "test": "vitest run"
   },
   "prisma": {
