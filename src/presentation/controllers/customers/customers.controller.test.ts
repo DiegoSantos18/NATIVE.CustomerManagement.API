@@ -4,12 +4,14 @@ import { CustomersController } from './customers.controller.js';
 import {
   CountCustomersByCityUseCase,
   GetCustomerByIdUseCase,
+  GetCustomerCitiesUseCase,
   ListCustomersUseCase,
   UpdateCustomerUseCase,
 } from '../../../application/customers/use-cases/index.js';
 
 describe('CustomersController', () => {
   const executarContagem = vi.fn();
+  const executarConsultaCidades = vi.fn();
   const executarConsultaPorId = vi.fn();
   const executarListagem = vi.fn();
   const executarAtualizacao = vi.fn();
@@ -17,6 +19,10 @@ describe('CustomersController', () => {
   const casoDeUsoContagem = {
     execute: executarContagem,
   } as unknown as CountCustomersByCityUseCase;
+
+  const casoDeUsoConsultaCidades = {
+    execute: executarConsultaCidades,
+  } as unknown as GetCustomerCitiesUseCase;
 
   const casoDeUsoConsultaPorId = {
     execute: executarConsultaPorId,
@@ -32,6 +38,7 @@ describe('CustomersController', () => {
 
   const controller = new CustomersController(
     casoDeUsoContagem,
+    casoDeUsoConsultaCidades,
     casoDeUsoListagem,
     casoDeUsoConsultaPorId,
     casoDeUsoAtualizacao,
@@ -48,67 +55,118 @@ describe('CustomersController', () => {
     vi.clearAllMocks();
   });
 
-  it('deve retornar 200 com os clientes e metadados da paginação', async () => {
-    const resultadoEsperado = {
-      items: [],
-      page: 1,
-      pageSize: 10,
-      totalItems: 0,
-      totalPages: 0,
-    };
+  describe('getCities', () => {
+    it('deve retornar 200 com a lista de cidades distintas', async () => {
+      const cidadesEsperadas = ['Caxias do Sul, RS', 'Porto Alegre, RS'];
 
-    executarListagem.mockResolvedValue(resultadoEsperado);
+      executarConsultaCidades.mockResolvedValue(cidadesEsperadas);
 
-    await controller.getAll({ query: {} } as Request, res, next);
+      await controller.getCities({} as Request, res, next);
 
-    expect(executarListagem).toHaveBeenCalledOnce();
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(resultadoEsperado);
-    expect(next).not.toHaveBeenCalled();
-  });
-
-  it('deve retornar 400 quando os parâmetros forem inválidos', async () => {
-    await controller.getAll({ query: { page: '0' } } as unknown as Request, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({
-      message: 'page deve ser maior ou igual a 1.',
+      expect(executarConsultaCidades).toHaveBeenCalledOnce();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(cidadesEsperadas);
+      expect(next).not.toHaveBeenCalled();
     });
-    expect(executarListagem).not.toHaveBeenCalled();
+
+    it('deve retornar 200 com uma lista vazia quando não houver cidades', async () => {
+      executarConsultaCidades.mockResolvedValue([]);
+
+      await controller.getCities({} as Request, res, next);
+
+      expect(executarConsultaCidades).toHaveBeenCalledOnce();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith([]);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it('deve encaminhar erros da consulta para o middleware', async () => {
+      const erro = new Error('Erro ao consultar cidades');
+      executarConsultaCidades.mockRejectedValue(erro);
+
+      await controller.getCities({} as Request, res, next);
+
+      expect(next).toHaveBeenCalledWith(erro);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
   });
 
-  it('deve encaminhar erros da listagem para o middleware', async () => {
-    const erro = new Error('Erro ao listar clientes');
-    executarListagem.mockRejectedValue(erro);
+  describe('search', () => {
+    it('deve retornar 200 com os clientes e metadados da paginação', async () => {
+      const resultadoEsperado = {
+        items: [],
+        page: 1,
+        pageSize: 10,
+        totalItems: 0,
+        totalPages: 0,
+      };
 
-    await controller.getAll({ query: {} } as Request, res, next);
+      executarListagem.mockResolvedValue(resultadoEsperado);
 
-    expect(next).toHaveBeenCalledWith(erro);
+      await controller.search({ body: {} } as Request, res, next);
+
+      expect(executarListagem).toHaveBeenCalledWith({
+        pagination: {
+          page: 1,
+          pageSize: 10,
+        },
+        filters: {},
+      });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(resultadoEsperado);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it('deve retornar 400 quando o corpo da pesquisa for inválido', async () => {
+      await controller.search(
+        { body: { pagination: { page: 0 } } } as unknown as Request,
+        res,
+        next,
+      );
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'page deve ser maior ou igual a 1.',
+      });
+      expect(executarListagem).not.toHaveBeenCalled();
+    });
+
+    it('deve encaminhar erros da listagem para o middleware', async () => {
+      const erro = new Error('Erro ao listar clientes');
+      executarListagem.mockRejectedValue(erro);
+
+      await controller.search({ body: {} } as Request, res, next);
+
+      expect(next).toHaveBeenCalledWith(erro);
+    });
   });
 
-  it('deve retornar 200 com a contagem de clientes por cidade', async () => {
-    const resultadoEsperado = [
-      { city: 'Caxias do Sul', customersTotal: 10 },
-      { city: 'Porto Alegre', customersTotal: 25 },
-    ];
+  describe('getTotalByCity', () => {
+    it('deve retornar 200 com a contagem de clientes por cidade', async () => {
+      const resultadoEsperado = [
+        { city: 'Caxias do Sul', customersTotal: 10 },
+        { city: 'Porto Alegre', customersTotal: 25 },
+      ];
 
-    executarContagem.mockResolvedValue(resultadoEsperado);
+      executarContagem.mockResolvedValue(resultadoEsperado);
 
-    await controller.getTotalByCity({} as Request, res, next);
+      await controller.getTotalByCity({} as Request, res, next);
 
-    expect(executarContagem).toHaveBeenCalledOnce();
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(resultadoEsperado);
-    expect(next).not.toHaveBeenCalled();
-  });
+      expect(executarContagem).toHaveBeenCalledOnce();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(resultadoEsperado);
+      expect(next).not.toHaveBeenCalled();
+    });
 
-  it('deve encaminhar erros da contagem para o middleware', async () => {
-    const erro = new Error('Erro ao consultar o banco de dados');
-    executarContagem.mockRejectedValue(erro);
+    it('deve encaminhar erros da contagem para o middleware', async () => {
+      const erro = new Error('Erro ao consultar o banco de dados');
+      executarContagem.mockRejectedValue(erro);
 
-    await controller.getTotalByCity({} as Request, res, next);
+      await controller.getTotalByCity({} as Request, res, next);
 
-    expect(next).toHaveBeenCalledWith(erro);
+      expect(next).toHaveBeenCalledWith(erro);
+    });
   });
 
   describe('getById', () => {

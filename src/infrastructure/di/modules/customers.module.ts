@@ -1,8 +1,8 @@
 import type { Container } from 'inversify';
-
 import {
   CountCustomersByCityUseCase,
   GetCustomerByIdUseCase,
+  GetCustomerCitiesUseCase,
   ListCustomersUseCase,
   UpdateCustomerUseCase,
 } from '../../../application/customers/use-cases/index.js';
@@ -19,12 +19,21 @@ export function registerCustomersModule(container: Container): void {
     .toDynamicValue(
       (context) => new CountCustomersByCityUseCase(context.get(PrismaCustomerRepository)),
     );
+
+  container
+    .bind(GetCustomerCitiesUseCase)
+    .toDynamicValue(
+      (context) => new GetCustomerCitiesUseCase(context.get(PrismaCustomerRepository)),
+    );
+
   container
     .bind(ListCustomersUseCase)
     .toDynamicValue((context) => new ListCustomersUseCase(context.get(PrismaCustomerRepository)));
+
   container
     .bind(GetCustomerByIdUseCase)
     .toDynamicValue((context) => new GetCustomerByIdUseCase(context.get(PrismaCustomerRepository)));
+
   container
     .bind(UpdateCustomerUseCase)
     .toDynamicValue((context) => new UpdateCustomerUseCase(context.get(PrismaCustomerRepository)));
@@ -36,6 +45,7 @@ export function registerCustomersModule(container: Container): void {
       (context) =>
         new CustomersController(
           context.get(CountCustomersByCityUseCase),
+          context.get(GetCustomerCitiesUseCase),
           context.get(ListCustomersUseCase),
           context.get(GetCustomerByIdUseCase),
           context.get(UpdateCustomerUseCase),

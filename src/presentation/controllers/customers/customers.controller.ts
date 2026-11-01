@@ -3,11 +3,12 @@ import { BaseController } from '../index.js';
 import {
   CountCustomersByCityUseCase,
   GetCustomerByIdUseCase,
+  GetCustomerCitiesUseCase,
   ListCustomersUseCase,
   UpdateCustomerUseCase,
 } from '../../../application/customers/use-cases/index.js';
 import {
-  validateListCustomersQuery,
+  validateSearchCustomersBody,
   validateGetCustomerById,
   validateUpdateCustomer,
 } from '../../validators/customers/index.js';
@@ -15,12 +16,22 @@ import {
 export class CustomersController extends BaseController {
   constructor(
     private readonly countCustomersByCityUseCase: CountCustomersByCityUseCase,
+    private readonly getCustomerCitiesUseCase: GetCustomerCitiesUseCase,
     private readonly listCustomersUseCase: ListCustomersUseCase,
     private readonly getCustomerByIdUseCase: GetCustomerByIdUseCase,
     private readonly updateCustomerUseCase: UpdateCustomerUseCase,
   ) {
     super();
   }
+
+  getCities = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.getCustomerCitiesUseCase.execute();
+      this.ok(res, result);
+    } catch (error: unknown) {
+      next(error);
+    }
+  };
 
   getTotalByCity = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -32,9 +43,9 @@ export class CustomersController extends BaseController {
     }
   };
 
-  getAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  search = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const validation = validateListCustomersQuery(req.query);
+      const validation = validateSearchCustomersBody(req.body);
 
       if (!validation.success) {
         this.badRequest(res, validation.message);
