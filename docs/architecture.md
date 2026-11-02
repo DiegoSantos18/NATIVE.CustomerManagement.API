@@ -90,6 +90,7 @@ A estrutura abaixo destaca os diretórios e responsabilidades por camada. Ela de
   - 📁 `models/customers/` — Modelo Prisma de clientes
   - 📁 `seed/` — Scripts de população de dados
   - 📄 `schema.prisma` — Schema principal do Prisma
+- 📁 **`public/`** — Ativos estáticos públicos (`favicon.png`)
 - 📁 **`src/`** — Código-fonte da API
   - 📄 `server.ts` — Inicialização do servidor
   - 📁 **`presentation/`** — Entrada HTTP
