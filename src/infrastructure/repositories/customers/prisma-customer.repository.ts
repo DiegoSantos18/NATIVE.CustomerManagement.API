@@ -1,4 +1,5 @@
 import { prismaClient } from '../../database/prisma-client.js';
+import { buildDataGridWhereClause } from '../../database/prisma-filter.helper.js';
 import type { PaginatedResult, QueryParams } from '../../../domain/common/queries/index.js';
 import type { ICustomerRepository } from '../../../domain/customers/repositories/index.js';
 import type { Customer } from '../../../domain/customers/entities/index.js';
@@ -23,10 +24,30 @@ export class PrismaCustomerRepository implements ICustomerRepository {
 
   async findAll(params: QueryParams<CustomerFilters>): Promise<PaginatedResult<Customer>> {
     const { page, pageSize } = params.pagination;
-    const { cities } = params.filters ?? {};
+    const { cities, ...gridFilters } = params.filters ?? {};
 
-    const where = {
-      ...(cities?.length ? { city: { in: cities } } : {}),
+    // 1. Filtros específicos do domínio de clientes (ex: cidades)
+    const cityWhere = cities?.length ? { city: { in: cities } } : {};
+
+    // 2. Filtros genéricos da grid utilizando o helper reutilizável da infra
+    const allowedCustomerFields = [
+      'firstName',
+      'lastName',
+      'email',
+      'city',
+      'company',
+      'title',
+    ] as const;
+
+    const gridWhere = buildDataGridWhereClause<Prisma.CustomerWhereInput>(
+      gridFilters,
+      allowedCustomerFields,
+    );
+
+    // 3. Combinação unificada das cláusulas where
+    const where: Prisma.CustomerWhereInput = {
+      ...cityWhere,
+      ...gridWhere,
     };
 
     const [items, totalItems] = await Promise.all([

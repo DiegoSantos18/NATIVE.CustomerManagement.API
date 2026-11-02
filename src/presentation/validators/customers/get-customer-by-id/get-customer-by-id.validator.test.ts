@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { validateGetCustomerById } from './get-customer-by-id.validator.js';
 
 describe('validateGetCustomerById', () => {

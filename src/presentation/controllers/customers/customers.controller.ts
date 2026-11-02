@@ -52,7 +52,9 @@ export class CustomersController extends BaseController {
         return;
       }
 
-      const result = await this.listCustomersUseCase.execute(validation.data);
+      const result = await this.listCustomersUseCase.execute(
+        validation.data as Parameters<ListCustomersUseCase['execute']>[0],
+      );
 
       this.ok(res, result);
     } catch (error: unknown) {

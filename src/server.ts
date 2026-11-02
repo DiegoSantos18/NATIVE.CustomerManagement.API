@@ -1,14 +1,19 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-
 import { container } from './infrastructure/di/container.js';
 import { CustomersController } from './presentation/controllers/customers/index.js';
 import { createCustomersRoutes } from './presentation/routes/customers/customers.routes.js';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
 const port = process.env.PORT || 3000;
 
 // Global middlewares

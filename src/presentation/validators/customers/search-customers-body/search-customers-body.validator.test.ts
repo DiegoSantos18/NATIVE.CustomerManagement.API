@@ -42,6 +42,31 @@ describe('validateSearchCustomersBody', () => {
     });
   });
 
+  it('deve validar os filtros de operador da grid (field, operator e value)', () => {
+    const result = validateSearchCustomersBody({
+      filters: {
+        field: 'firstName',
+        operator: 'contains',
+        value: 'Diego',
+      },
+    });
+
+    expect(result).toEqual({
+      success: true,
+      data: {
+        pagination: {
+          page: 1,
+          pageSize: 10,
+        },
+        filters: {
+          field: 'firstName',
+          operator: 'contains',
+          value: 'Diego',
+        },
+      },
+    });
+  });
+
   it('deve aplicar valores padrão quando a paginação estiver vazia', () => {
     const result = validateSearchCustomersBody({
       pagination: {},
