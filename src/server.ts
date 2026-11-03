@@ -1,9 +1,15 @@
 import path from 'path';
+import { createServer } from 'node:http';
 import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { Server } from 'socket.io';
 import { container } from './infrastructure/di/container.js';
+import {
+  registerCustomersModule,
+  registerRealtimeModule,
+} from './infrastructure/di/modules/index.js';
 import { CustomersController } from './presentation/controllers/customers/index.js';
 import { createCustomersRoutes } from './presentation/routes/customers/customers.routes.js';
 import { errorHandlerMiddleware } from './presentation/middlewares/error-handler.middleware.js';
@@ -20,6 +26,15 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
+
+const httpServer = createServer(app);
+const socketServer = new Server(httpServer, {
+  cors: {
+    origin: '*',
+  },
+});
+registerRealtimeModule(container, socketServer);
+registerCustomersModule(container);
 
 // Health check
 app.get('/health', (_req, res) => {
@@ -57,7 +72,7 @@ app.use((_req, res) => {
 // 500 Error Handler Global
 app.use(errorHandlerMiddleware);
 
-// Inicializa o servidor diretamente
-app.listen(port, () => {
+// Inicializa HTTP e Socket.IO no mesmo servidor
+httpServer.listen(port, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);
 });
