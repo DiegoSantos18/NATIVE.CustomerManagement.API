@@ -2,6 +2,8 @@
   "recommendations": [
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "Prisma.prisma"
+    "Prisma.prisma",
+    "cweijan.vscode-database-client2",
+    "ms-azuretools.vscode-containers"
   ]
 }

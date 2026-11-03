@@ -27,8 +27,10 @@ src/generated/prisma/
 
 # Editor and operating system files
 .vscode/*
+!.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/settings.json
+!.vscode/tasks.json
 .idea/
 .DS_Store
 Thumbs.db
