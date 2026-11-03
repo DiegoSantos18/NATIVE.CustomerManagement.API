@@ -1,0 +1,15 @@
+$kind: http-request
+name: Get Customer Totals by City
+order: 3000
+method: GET
+url: '{{baseUrl}}/customers/total-by-city'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Status code is 200', () => {
+        pm.response.to.have.status(200);
+      });
+      pm.test('Response is JSON', () => {
+        pm.response.to.be.json;
+      });

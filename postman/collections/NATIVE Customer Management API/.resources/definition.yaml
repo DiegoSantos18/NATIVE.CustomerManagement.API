@@ -1,0 +1,10 @@
+$kind: collection
+name: NATIVE Customer Management API
+description: Requests generated from the Express routes and validators in the codebase.
+variables:
+  - key: baseUrl
+    value: 'http://localhost:3000'
+    description: Local API base URL.
+  - key: customerId
+    value: '1'
+    description: Customer identifier used by detail and update requests.

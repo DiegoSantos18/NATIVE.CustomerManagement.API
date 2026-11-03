@@ -145,6 +145,14 @@ npm run dev
 
 Por padrão, a API fica disponível em `http://localhost:3000`.
 
+### 📮 Postman
+
+Os arquivos da collection e do ambiente local estão em [`postman/collections`](postman):
+
+- Endpoints: health check, cidades, totais por cidade, busca paginada, consulta por ID e atualização.
+
+Importe o arquivo json ou abra a pasta do projeto no Postman para utilizar as collections.
+
 ### Tratamento de Erros
 
 A API utiliza os seguintes códigos de status HTTP para padronizar as respostas de erro. Exceto para o erro `500`, todas as respostas retornam um objeto JSON contendo o campo `message`.
