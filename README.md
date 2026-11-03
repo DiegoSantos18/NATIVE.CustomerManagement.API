@@ -145,6 +145,16 @@ npm run dev
 
 Por padrão, a API fica disponível em `http://localhost:3000`.
 
+### Tratamento de Erros
+
+A API utiliza os seguintes códigos de status HTTP para padronizar as respostas de erro. Exceto para o erro `500`, todas as respostas retornam um objeto JSON contendo o campo `message`.
+
+- **`400` (Bad Request):** JSON inválido ou malformado.
+- **`404` (Not Found):** Caminho ou recurso inexistente.
+- **`409` (Conflict):** Violação de restrição de unicidade.
+- **`413` (Payload Too Large):** Tamanho do corpo da requisição acima do limite permitido.
+- **`500` (Internal Server Error):** Erro inesperado. A mensagem genérica _"Erro interno do servidor"_ é retornada ao cliente, enquanto os detalhes técnicos são registrados internamente no log da API por segurança.
+
 ### 🗄️ Banco de Dados
 
 O projeto utiliza MySQL 8 via Docker Compose. Consulte o [Guia do Banco de Dados](docs/database.md) para configurar o ambiente, iniciar o container e executar migrations e seeds.
