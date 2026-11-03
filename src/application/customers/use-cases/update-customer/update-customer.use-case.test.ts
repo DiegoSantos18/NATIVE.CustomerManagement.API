@@ -2,16 +2,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Customer } from '../../../../domain/customers/entities/index.js';
 import type { CustomerUpdateData } from '../../../../domain/customers/types/index.js';
 import type { ICustomerRepository } from '../../../../domain/customers/repositories/index.js';
+import { CUSTOMER_UPDATED_EVENT } from '../../events/index.js';
 import { UpdateCustomerUseCase } from './update-customer.use-case.js';
 
 describe('UpdateCustomerUseCase', () => {
   const update = vi.fn();
+  const publish = vi.fn();
 
   const customerRepository = {
     update,
   } as unknown as ICustomerRepository;
 
-  const useCase = new UpdateCustomerUseCase(customerRepository);
+  const updatePublisher = { publish };
+  const useCase = new UpdateCustomerUseCase(customerRepository, updatePublisher);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -34,6 +37,8 @@ describe('UpdateCustomerUseCase', () => {
     const result = await useCase.execute(1, data);
 
     expect(result).toEqual(customer);
+    expect(publish).toHaveBeenCalledOnce();
+    expect(publish).toHaveBeenCalledWith(CUSTOMER_UPDATED_EVENT, { customerId: customer.id });
   });
 
   it('deve encaminhar o ID e os dados ao repositório', async () => {
@@ -55,6 +60,7 @@ describe('UpdateCustomerUseCase', () => {
     const result = await useCase.execute(999, { firstName: 'Novo nome' });
 
     expect(result).toBeNull();
+    expect(publish).not.toHaveBeenCalled();
   });
 
   it('deve propagar erros ocorridos no repositório', async () => {
@@ -65,5 +71,6 @@ describe('UpdateCustomerUseCase', () => {
     await expect(useCase.execute(1, { firstName: 'Novo nome' })).rejects.toThrow(
       'Erro ao atualizar cliente',
     );
+    expect(publish).not.toHaveBeenCalled();
   });
 });

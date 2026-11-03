@@ -51,6 +51,7 @@ flowchart TB
     Composition["Composition Root · Inversify"] -. "wires dependencies" .-> Controllers
     Composition -.-> UseCases
     Composition -.-> PrismaRepo
+    Composition -.-> Realtime
 
     DatabaseDoc["🗄️ Abrir diagrama ER · database.md"]
     Overview["↩️ Voltar à visão geral"]
