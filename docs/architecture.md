@@ -95,7 +95,7 @@ A estrutura abaixo destaca os diretórios e responsabilidades por camada. Ela de
   - 📄 `server.ts` — Inicialização do servidor
   - 📁 **`presentation/`** — Entrada HTTP
     - 📁 `routes/` — Rotas Express
-    - 📁 `middlewares/` — Middlewares
+    - 📁 `middlewares/` — Tratamento global de erros e respostas de rotas inexistentes
     - 📁 `validators/` — Validação com Zod
     - 📁 `controllers/` — Controllers e `BaseController`
   - 📁 **`application/`** — Casos de uso e DTOs

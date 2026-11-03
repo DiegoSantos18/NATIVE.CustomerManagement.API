@@ -1,5 +1,6 @@
 import { prismaClient } from '../../database/prisma-client.js';
 import { buildDataGridWhereClause } from '../../database/prisma-filter.helper.js';
+import { ConflictError } from '../../../domain/common/errors/index.js';
 import type { PaginatedResult, QueryParams } from '../../../domain/common/queries/index.js';
 import type { ICustomerRepository } from '../../../domain/customers/repositories/index.js';
 import type { Customer } from '../../../domain/customers/entities/index.js';
@@ -72,7 +73,19 @@ export class PrismaCustomerRepository implements ICustomerRepository {
   }
 
   async add(data: CustomerCreateData): Promise<Customer> {
-    return this.prisma.customer.create({ data });
+    try {
+      return await this.prisma.customer.create({ data });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictError('Já existe um registro com esses dados.');
+        }
+        if (error.code === 'P2003') {
+          throw new ConflictError('A operação viola um relacionamento existente.');
+        }
+      }
+      throw error;
+    }
   }
 
   async update(id: number, data: CustomerUpdateData): Promise<Customer | null> {
@@ -82,8 +95,16 @@ export class PrismaCustomerRepository implements ICustomerRepository {
         data,
       });
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-        return null;
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictError('Já existe um registro com esses dados.');
+        }
+        if (error.code === 'P2003') {
+          throw new ConflictError('A operação viola um relacionamento existente.');
+        }
+        if (error.code === 'P2025') {
+          return null;
+        }
       }
 
       throw error;
