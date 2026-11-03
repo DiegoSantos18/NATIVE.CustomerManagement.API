@@ -1,0 +1,33 @@
+$kind: http-request
+name: Update Customer
+order: 6000
+method: PUT
+url: '{{baseUrl}}/customers/:id'
+pathVariables:
+  - key: id
+    value: '{{customerId}}'
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "firstName": "Laura",
+      "lastName": "Richards",
+      "email": "lrichards0@reverbnation.com",
+      "gender": "Female",
+      "company": "Meezzy",
+      "city": "Warner, NH",
+      "title": "Teste Update"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Status code is 200', () => {
+        pm.response.to.have.status(200);
+      });
+      pm.test('Response is JSON', () => {
+        pm.response.to.be.json;
+      });
